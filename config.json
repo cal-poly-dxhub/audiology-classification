@@ -1,0 +1,138 @@
+{
+    "templates": {
+        "MassEyeAndEar": {
+            "template": {
+                "formtype": "MassEyeAndEar",
+                "Attributes": {
+                    "Better Ear": {
+                        "Type of Loss": "",
+                        "Degree of Loss": "",
+                        "Neuro Type": "",
+                        "Reasoning": ""
+                    },
+                    "Left Ear": {
+                        "Type of Loss": "",
+                        "Degree of Loss": "",
+                        "Neuro Type": "",
+                        "Reasoning": ""
+                    },
+                    "Right Ear": {
+                        "Type of Loss": "",
+                        "Degree of Loss": "",
+                        "Neuro Type": "",
+                        "Reasoning": ""
+                    }
+                }
+            }
+        },
+        "CDC": {
+            "template": {
+                "formtype": "CDC",
+                "Attributes": {
+                    "Left Ear Overall Result": "",
+                    "Left Ear Degree": "",
+                    "Right Ear Overall Result": "",
+                    "Right Ear Degree": "",
+                    "Reasoning": ""
+                }
+            }
+        },
+        "Example": {
+            "template": {
+                "formtype": "Example",
+                "Attributes": {
+                    "Ear Diagnosis": {
+                        "Left Ear": {
+                            "Loss Type": "",
+                            "Severity": "",
+                            "Neural Impact": "",
+                            "Reasoning": ""
+                        },
+                        "Right Ear": {
+                            "Loss Type": "",
+                            "Severity": "",
+                            "Neural Impact": "",
+                            "Reasoning": ""
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "mass_eye_and_ear_rules": {
+        "TypeOfLoss": [
+            "Normal hearing (-10 - 15 dB)",
+            "Conductive loss only",
+            "Type not determined",
+            "Not tested",
+            "Sensorineural Component"
+        ],
+        "DegreeOfLossRequiredIf": [
+            "Conductive loss only",
+            "Type not determined",
+            "Sensorineural Component"
+        ],
+        "DegreeOfLoss": [
+            "Slight (16-25 dB)",
+            "Mild (26-40 dB)",
+            "Moderate (41-55 dB)",
+            "Moderately severe (56-70 dB)",
+            "Severe (71-90 dB)",
+            "Profound (>90 dB)",
+            "Degree not determined"
+        ],
+        "NeuroTypeRequiredIf": "Sensorineural Component",
+        "NeuroType": [
+            "Sensorineural loss only",
+            "Mixed loss",
+            "Auditory dys-synchrony",
+            "Subtype not determined"
+        ]
+    },
+    "processing_guidelines": {
+        "rules": [
+            "Diagnosis must be ear-specific (left ear and right ear).",
+            "If hearing is normal, the type is 'No hearing loss', and the degree is '1'.",
+            "If multiple types of hearing loss are present, prioritize permanent types:",
+            "- Mixed and Sensorineural = Sensorineural",
+            "- Transient Conductive and Mixed = Mixed",
+            "- Transient Conductive and Sensorineural = Sensorineural",
+            "If findings mention 'Auditory Neuropathy', prioritize it over other types unless explicitly ruled out.",
+            "If severity is mentioned but type is unknown, mark as 'Unknown' with the provided severity.",
+            "If multiple severities are listed for an ear, choose the most severe:",
+            "- Slight (16-25 dB HL), Mild (26-40 dB HL), Moderate (41-55 dB HL),",
+            "- Moderately Severe (56-70 dB HL), Severe (71-90 dB HL), Profound (91+ dB HL).",
+            "If both type and severity are inconclusive, mark as 'Unknown'.",
+            "If no hearing loss is indicated for both ears, apply:",
+            "- Type = 'No hearing loss', Degree = '1'.",
+            "Ensure that the 'Better Ear' matches either the Left Ear or Right Ear, based on the least degree of loss."
+        ]
+    },
+    "cdc_guidelines": {
+        "TypeOfLoss": {
+            "No hearing loss": "No hearing loss",
+            "Sensorineural": "Sensorineural",
+            "Transient Conductive": "Transient Conductive",
+            "Permanent Conductive": "Permanent Conductive",
+            "Mixed": "Mixed",
+            "Auditory Neuropathy": "Auditory Neuropathy",
+            "Unknown": "Unknown"
+        },
+        "DegreeOfLoss": {
+            "No hearing loss": "1",
+            "Slight (16-25 dB HL)": "2",
+            "Mild (26-40 dB HL)": "3",
+            "Moderate (41-55 dB HL)": "4",
+            "Moderately severe (56-70 dB HL)": "5",
+            "Severe (71-90 dB HL)": "6",
+            "Profound (91+ dB HL)": "7",
+            "Unknown": "88"
+        },
+        "NeuroType": {
+            "Sensorineural loss only": "Sensorineural only",
+            "Mixed loss": "Mixed",
+            "Auditory dys-synchrony": "Auditory Dys-Synchrony",
+            "Subtype not determined": "Subtype not determined"
+        }
+    }
+}
