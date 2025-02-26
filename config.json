@@ -171,32 +171,5 @@
             "- Type = 'No hearing loss', Degree = '1'.",
             "Ensure that the 'Better Ear' matches either the Left Ear or Right Ear, based on the least degree of loss."
         ]
-    },
-    "cdc_guidelines": {
-        "TypeOfLoss": {
-            "No hearing loss": "No hearing loss",
-            "Sensorineural": "Sensorineural",
-            "Transient Conductive": "Transient Conductive",
-            "Permanent Conductive": "Permanent Conductive",
-            "Mixed": "Mixed",
-            "Auditory Neuropathy": "Auditory Neuropathy",
-            "Unknown": "Unknown"
-        },
-        "DegreeOfLoss": {
-            "No hearing loss": "1",
-            "Slight (16-25 dB HL)": "2",
-            "Mild (26-40 dB HL)": "3",
-            "Moderate (41-55 dB HL)": "4",
-            "Moderately severe (56-70 dB HL)": "5",
-            "Severe (71-90 dB HL)": "6",
-            "Profound (91+ dB HL)": "7",
-            "Unknown": "88"
-        },
-        "NeuroType": {
-            "Sensorineural loss only": "Sensorineural only",
-            "Mixed loss": "Mixed",
-            "Auditory dys-synchrony": "Auditory Dys-Synchrony",
-            "Subtype not determined": "Subtype not determined"
-        }
     }
 }
