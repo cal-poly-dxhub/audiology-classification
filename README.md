@@ -1,4 +1,4 @@
-# Pediatric Audiology Classification
+# Audiology Classification
 
 # Collaboration
 
