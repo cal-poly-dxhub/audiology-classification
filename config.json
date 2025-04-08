@@ -4,48 +4,135 @@
             "template": {
                 "formtype": "MassEyeAndEar",
                 "Attributes": {
-                    "Better Ear": {
-                        "Type of Loss": "",
-                        "Degree of Loss": "",
-                        "Neuro Type": "",
-                        "Reasoning": ""
+                    "Hearing Type": {
+                        "Left Ear": {
+                            "Type of Loss": "",
+                            "Degree of Loss": "",
+                            "Neuro Type": "",
+                            "Reasoning": ""
+                        },
+                        "Right Ear": {
+                            "Type of Loss": "",
+                            "Degree of Loss": "",
+                            "Neuro Type": "",
+                            "Reasoning": ""
+                        }
                     },
-                    "Left Ear": {
-                        "Type of Loss": "",
-                        "Degree of Loss": "",
-                        "Neuro Type": "",
-                        "Reasoning": ""
-                    },
-                    "Right Ear": {
-                        "Type of Loss": "",
-                        "Degree of Loss": "",
-                        "Neuro Type": "",
-                        "Reasoning": ""
-                    }
+                    "Reasoning": ""
                 }
-            }
+            },
+            "valid_values": {
+                "Hearing Type": {
+                    "Type of Loss": [
+                        "Normal hearing (-10 - 15 dB)",
+                        "Conductive loss only",
+                        "Type not determined",
+                        "Not tested",
+                        "Sensorineural Component"
+                    ],
+                    "Degree of Loss": [
+                        "Slight (16-25 dB)",
+                        "Mild (26-40 dB)",
+                        "Moderate (41-55 dB)",
+                        "Moderately severe (56-70 dB)",
+                        "Severe (71-90 dB)",
+                        "Profound (>90 dB)",
+                        "Degree not determined"
+                    ],
+                    "Neuro Type": [
+                        "Sensorineural loss only",
+                        "Mixed loss",
+                        "Auditory dys-synchrony",
+                        "Subtype not determined"
+                    ]
+                }
+            },
+            "processing_rules": {
+                "rules": [
+                    "If Conductive loss only, Type not determined, Sensorineural Component, then MUST provide a Degree of Loss. Otherwise Degree of Loss is ''. ",
+                    "If Sensorineural Component, then MUST provide Neuro Type. Otherwise Neuro Type is ''.",
+                    "If multiple types of hearing loss are present, prioritize permanent types:",
+                    "- Mixed and Sensorineural = Sensorineural",
+                    "If Sensorineural, a Neuro Type must be provided: Sensorineural loss only, Mixed loss, Auditory dys-synchrony, Subtype not determined",
+                    "- Transient Conductive and Mixed = Mixed",
+                    "- Transient Conductive and Sensorineural = Sensorineural",
+                    "If findings mention 'Auditory Neuropathy', prioritize it over other types unless explicitly ruled out.",
+                    "If severity is mentioned but type is unknown, mark as 'Unknown' with the provided severity.",
+                    "If multiple severities are listed for an ear, choose the most severe:",
+                    "- Slight (16-25 dB HL), Mild (26-40 dB HL), Moderate (41-55 dB HL),",
+                    "- Moderately Severe (56-70 dB HL), Severe (71-90 dB HL), Profound (91+ dB HL).",
+                    "If both type and severity are inconclusive, mark as 'Unknown'."
+                ]
+            },
+            "csv_headers": ["Patient Index", "Raw Report", "Audiometric Test Results",
+                "Left Ear Type of Loss", "Left Ear Degree of Loss", "Left Ear Neuro Type",
+                "Right Ear Type of Loss", "Right Ear Degree of Loss", "Right Ear Neuro Type", "Reasoning"
+            ]
         },
         "CDC": {
             "template": {
                 "formtype": "CDC",
                 "Attributes": {
-                    "Left Ear Overall Result": "",
-                    "Left Ear Degree": "",
-                    "Right Ear Overall Result": "",
-                    "Right Ear Degree": "",
+                    "Hearing Type": {
+                        "Left Ear Overall Result": "",
+                        "Left Ear Degree": "",
+                        "Right Ear Overall Result": "",
+                        "Right Ear Degree": ""
+                    },
                     "Reasoning": ""
                 }
-            }
+            },
+            "valid_values": {
+                "Hearing Type": {
+                    "Overall Result": [
+                        "No hearing loss",
+                        "Sensorineural",
+                        "Transient Conductive",
+                        "Permanent Conductive",
+                        "Mixed",
+                        "Auditory Neuropathy",
+                        "Unknown"
+                    ],
+                    "Degree of Loss": [
+                        "No hearing loss",
+                        "Slight (16-25 dB HL)",
+                        "Mild (26-40 dB HL)",
+                        "Moderate (41-55 dB HL)",
+                        "Moderately severe (56-70 dB HL)",
+                        "Severe (71-90 dB HL)",
+                        "Profound (91+ dB HL)",
+                        "Unknown"
+                    ]
+                }
+            },
+            "processing_rules": {
+                "rules": [
+                    "Diagnosis must be ear-specific (left ear and right ear).",
+                    "If hearing is normal, the type is 'No hearing loss', and the degree is '1'.",
+                    "If multiple types of hearing loss are present, prioritize permanent types:",
+                    "- Mixed and Sensorineural = Sensorineural",
+                    "If Sensorineural, a Neuro Type must be provided: Sensorineural loss only, Mixed loss, Auditory dys-synchrony, Subtype not determined",
+                    "- Transient Conductive and Mixed = Mixed",
+                    "- Transient Conductive and Sensorineural = Sensorineural",
+                    "If findings mention 'Auditory Neuropathy', prioritize it over other types unless explicitly ruled out.",
+                    "If severity is mentioned but type is unknown, mark as 'Unknown' with the provided severity.",
+                    "If multiple severities are listed for an ear, choose the most severe:",
+                    "- Slight (16-25 dB HL), Mild (26-40 dB HL), Moderate (41-55 dB HL),",
+                    "- Moderately Severe (56-70 dB HL), Severe (71-90 dB HL), Profound (91+ dB HL).",
+                    "If both type and severity are inconclusive, mark as 'Unknown'.",
+                    "If no hearing loss is indicated for both ears, apply:",
+                    "- Type = 'No hearing loss', Degree = '1'."
+                ]
+            },
+            "csv_headers": ["Patient Index", "Raw Report", "Audiometric Test Results",
+                "Left Ear Overall Result", "Left Ear Degree", "Right Ear Overall Result", "Right Ear Degree", "Reasoning"
+            ]
         },
         "Redcap": {
             "template": {
                 "formtype": "Redcap",
                 "Attributes": {
                     "Hearing Type": {
-                        "Better Ear": {
-                            "Type": "",
-                            "Degree": ""
-                        },
                         "Left Ear": {
                             "Type": "",
                             "Degree": ""
@@ -61,115 +148,160 @@
                             "Tier One": [],
                             "Tier Two": []
                         }
-                    }
+                    },
+                    "Reasoning": ""
                 }
-            }
-        }
-    },
-    "redcap_guidelines": {
-        "HearingType": {
-            "TypeOfLoss": [
-                "No hearing loss",
-                "Sensorineural",
-                "Transient Conductive",
-                "Permanent Conductive",
-                "Mixed",
-                "Auditory Neuropathy",
-                "Unknown"
-            ],
-            "DegreeOfLoss": [
-                "No hearing loss",
-                "Slight (16-25 dB HL)",
-                "Mild (26-40 dB HL)",
-                "Moderate (41-55 dB HL)",
-                "Moderately severe (56-70 dB HL)",
-                "Severe (71-90 dB HL)",
-                "Profound (91+ dB HL)",
-                "Unknown"
+            },
+            "valid_values": {
+                "Hearing Type": {
+                    "Type": [
+                        "No hearing loss",
+                        "Sensorineural",
+                        "Transient Conductive",
+                        "Permanent Conductive",
+                        "Mixed",
+                        "Auditory Neuropathy",
+                        "Unknown"
+                    ],
+                    "Degree": [
+                        "No hearing loss",
+                        "Slight (16-25 dB HL)",
+                        "Mild (26-40 dB HL)",
+                        "Moderate (41-55 dB HL)",
+                        "Moderately severe (56-70 dB HL)",
+                        "Severe (71-90 dB HL)",
+                        "Profound (91+ dB HL)",
+                        "Unknown"
+                    ]
+                },
+                "Known Hearing Loss Risk Indicators": {
+                    "Known Hearing Loss Risk": ["Yes", "No"],
+                    "Tier One": [
+                        "Aminoglycoside administration for more than 5 days",
+                        "Atresia",
+                        "Bacterial meningitis",
+                        "cCMV",
+                        "Chemotherapy",
+                        "Cleft lip/palate",
+                        "Down syndrome",
+                        "ECMO",
+                        "Hyperbilirubinemia with exchange transfusion",
+                        "Hypoxic ischemic encephalopathy",
+                        "Infection associated with reduced hearing",
+                        "Maternal Zika infection",
+                        "Microtia",
+                        "Other craniofacial anomalies",
+                        "Parental or medical provider concern",
+                        "Perinatal asphyxia",
+                        "Permanent childhood hearing loss in immediate family",
+                        "Significant head trauma",
+                        "Syndrome associated with reduced hearing"
+                    ],
+                    "Tier Two": [
+                        ">10 days mechanical ventilation",
+                        "< 32 weeks gestational age",
+                        "< 1500 grams birthweight",
+                        "Ear pits and/or preauricular tags",
+                        "History of maternal in utero infection",
+                        "Permanent childhood hearing loss in extended family",
+                        "Speech/Language delay"
+                    ]
+                }
+            },
+            "processing_rules": {
+                "rules": [
+                    "1) If any Tier One factor exists, mark 'Known Hearing Loss Risk' as 'Yes'",
+                    "2) If Tier Two factors exist without Tier One, mark as 'Yes' only if relevant symptoms are present",
+                    "3) Diagnosis must be ear-specific (left ear and right ear).",
+                    "4) If hearing is normal, the type is 'No hearing loss', and the degree is ''.",
+                    "5) If multiple types of hearing loss are present, prioritize permanent types:",
+                    "5a) - Mixed and Sensorineural = Sensorineural",
+                    "6) If Sensorineural, a Neuro Type must be provided: Sensorineural loss only, Mixed loss, Auditory dys-synchrony, Subtype not determined",
+                    "6a) - Transient Conductive and Mixed = Mixed",
+                    "6b) - Transient Conductive and Sensorineural = Sensorineural",
+                    "7) If findings mention 'Auditory Neuropathy', prioritize it over other types unless explicitly ruled out.",
+                    "8) If severity is mentioned but type is unknown, mark as 'Unknown' with the provided severity.",
+                    "9) If multiple severities are listed for an ear, choose the most severe:",
+                    "9a) - Slight (16-25 dB HL), Mild (26-40 dB HL), Moderate (41-55 dB HL),",
+                    "9b) - Moderately Severe (56-70 dB HL), Severe (71-90 dB HL), Profound (91+ dB HL).",
+                    "10) If both type and severity are inconclusive, mark as 'Unknown'.",
+                    "11) If no hearing loss is indicated for both ears, apply:",
+                    "11a) - Type = 'No hearing loss', Degree = 'No hearing loss'.",
+                    "12) **If severity is stated but type is unknown, classify as 'Unknown' with severity.**",
+                    "13) **Do NOT assume sensorineural loss solely based on normal tympanometry.** A conductive component must be explicitly ruled out.",
+                    "14) **If both conductive and sensorineural losses are reported, classify as 'Mixed' only if supported by test results.**",
+                    "15) **Auditory Neuropathy must be explicitly ruled out before classifying another type.**",
+                    "16) **Hyperbilirubinemia is a Tier One risk ONLY if exchange transfusion was performed.**",
+                    "17) **Parental concern alone is NOT a risk factor unless supported by another indicator.**",
+                    "18) There will only be Tier One or Tier Two Risk Factors if and only if Known Hearing Loss Risk is Yes"
+                ]
+            },
+            "csv_headers": [
+                "Patient Index",
+                "Raw Report",
+                "Audiometric Test Results",
+                "Left Ear Type", "Left Ear Degree",
+                "Right Ear Type", "Right Ear Degree",
+                "Known Hearing Loss Risk", "Tier One Risk Factors", "Tier Two Risk Factors",
+                "Reasoning"
             ]
         },
-        "KnownHearingLossRisk": {
-            "Options": ["Yes", "No"],
-            "TierOneRiskFactors": [
-                "Aminoglycoside administration for more than 5 days",
-                "Atresia",
-                "Bacterial meningitis",
-                "cCMV",
-                "Chemotherapy",
-                "Cleft lip/palate",
-                "Down syndrome",
-                "ECMO",
-                "Hyperbilirubinemia with exchange transfusion",
-                "Hypoxic ischemic encephalopathy",
-                "Infection associated with reduced hearing",
-                "Maternal Zika infection",
-                "Microtia",
-                "Other craniofacial anomalies",
-                "Parental or medical provider concern",
-                "Perinatal asphyxia",
-                "Permanent childhood hearing loss in immediate family",
-                "Significant head trauma",
-                "Syndrome associated with reduced hearing"
-            ],
-            "TierTwoRiskFactors": [
-                ">10 days mechanical ventilation",
-                "< 32 weeks gestational age",
-                "< 1500 grams birthweight",
-                "Ear pits and/or preauricular tags",
-                "History of maternal in utero infection",
-                "Permanent childhood hearing loss in extended family",
-                "Speech/Language delay"
+        "Dawn": {
+            "template": {
+                "formtype": "Dawn",
+                "Attributes": {
+                    "Hearing Type": {
+                        "Left Ear": {
+                            "Overall Result": "",
+                            "Degree": ""
+                        },
+                        "Right Ear": {
+                            "Overall Result": "",
+                            "Degree": ""
+                        }
+                    },
+                    "Reasoning": ""
+                }
+            },
+            "valid_values": {
+                "Hearing Type": {
+                    "Overall Result": [
+                        "Moderate",
+                        "Normal",
+                        "Mild",
+                        "Severe",
+                        "Minimal",
+                        "Profound",
+                        "Moderate to severe",
+                        "Undetermined",
+                        "Inconclusive"
+                    ],
+                    "Degree": [
+                        "Moderate",
+                        "Normal",
+                        "Mild",
+                        "Severe",
+                        "Minimal",
+                        "Profound",
+                        "Moderate to severe",
+                        "Undetermined",
+                        "Inconclusive"
+                    ]
+                }
+            },
+            "processing_rules": {
+                "rules": [
+                    "Diagnosis must be ear-specific (Left Ear and Right Ear).",
+                    "If multiple types of hearing loss are present, prioritize the most severe type.",
+                    "If severity is mentioned but type is unknown, mark as 'Undetermined'.",
+                    "If multiple severities are listed for an ear, choose the most severe classification.",
+                    "If findings suggest hearing loss but do not specify a type or severity, mark as 'Inconclusive'.",
+                    "If hearing is normal, classify as 'Normal'."
+                ]
+            },
+            "csv_headers": ["Patient Index", "Raw Report", "Audiometric Test Results",
+                "Left Ear Overall Result", "Left Ear Degree", "Right Ear Overall Result", "Right Ear Degree", "Reasoning"
             ]
         }
-    },
-    "mass_eye_and_ear_rules": {
-        "TypeOfLoss": [
-            "Normal hearing (-10 - 15 dB)",
-            "Conductive loss only",
-            "Type not determined",
-            "Not tested",
-            "Sensorineural Component"
-        ],
-        "DegreeOfLossRequiredIf": [
-            "Conductive loss only",
-            "Type not determined",
-            "Sensorineural Component"
-        ],
-        "DegreeOfLoss": [
-            "Slight (16-25 dB)",
-            "Mild (26-40 dB)",
-            "Moderate (41-55 dB)",
-            "Moderately severe (56-70 dB)",
-            "Severe (71-90 dB)",
-            "Profound (>90 dB)",
-            "Degree not determined"
-        ],
-        "NeuroTypeRequiredIf": "Sensorineural Component",
-        "NeuroType": [
-            "Sensorineural loss only",
-            "Mixed loss",
-            "Auditory dys-synchrony",
-            "Subtype not determined"
-        ]
-    },
-    "processing_guidelines": {
-        "rules": [
-            "Diagnosis must be ear-specific (left ear and right ear).",
-            "If hearing is normal, the type is 'No hearing loss', and the degree is ''.",
-            "If multiple types of hearing loss are present, prioritize permanent types:",
-            "- Mixed and Sensorineural = Sensorineural",
-            "If Sensorineural, a Neuro Type must be provided: Sensorineural loss only, Mixed loss, Auditory dys-synchrony, Subtype not determined",
-            "- Transient Conductive and Mixed = Mixed",
-            "- Transient Conductive and Sensorineural = Sensorineural",
-            "If findings mention 'Auditory Neuropathy', prioritize it over other types unless explicitly ruled out.",
-            "If severity is mentioned but type is unknown, mark as 'Unknown' with the provided severity.",
-            "If multiple severities are listed for an ear, choose the most severe:",
-            "- Slight (16-25 dB HL), Mild (26-40 dB HL), Moderate (41-55 dB HL),",
-            "- Moderately Severe (56-70 dB HL), Severe (71-90 dB HL), Profound (91+ dB HL).",
-            "If both type and severity are inconclusive, mark as 'Unknown'.",
-            "If no hearing loss is indicated for both ears, apply:",
-            "- Type = 'No hearing loss', Degree = '1'.",
-            "Ensure that the 'Better Ear' matches either the Left Ear or Right Ear, based on the least degree of loss."
-        ]
     }
 }
