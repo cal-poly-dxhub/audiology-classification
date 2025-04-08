@@ -41,19 +41,20 @@ Thanks for your interest in our solution. Having specific examples of replicatio
 - [Authors](#authors)
 - [Overview](#overview)
 - [High Level Description of Workflow](#high-level-description-of-workflow)
-  - [Step 1: Generate Reference Embeddings](#step-1-generate-reference-embeddings)
-  - [Step 2: Classify and Extract Information](#step-2-classify-and-extract-information)
+  - [Step 1: Generate Prompted Inputs](#step-1-generate-prompted-inputs)
+  - [Step 2: Submit Batch Inference Job](#step-2-submit-batch-inference-job)
+  - [Step 3: Parse Output and Write CSV](#step-3-parse-output-and-write-csv)
   - [Final Output Details](#final-output-details)
 - [Steps to Deploy and Configure the System](#steps-to-deploy-and-configure-the-system)
   - [Before We Get Started](#before-we-get-started)
-  - [1. Deploy an EC2 Instance](#1-deploy-an-ec2-instance)
-  - [2. Pull the Git Repository onto the EC2 Instance](#2-pull-the-git-repository-onto-the-ec2-instance)
-  - [3. Create a Virtual Environment](#3-create-a-virtual-environment)
-  - [4. Activate the Virtual Environment](#4-activate-the-virtual-environment)
-  - [5. Install the Required Packages](#5-install-the-required-packages)
-  - [6. Set Environment Variables](#6-set-environment-variables)
-  - [7. Run the Embeddings Pipeline](#7-run-the-embeddings-pipeline)
-  - [8. Classify and Extract Information from an eCR](#8-classify-and-extract-information-from-an-ecr)
+  - [System Configuration (Required)](#system-configuration-required)
+  - [1. Environment Step](#1-environment-step)
+  - [2. Update Configuration (Template or Logic Engine) - Optional](#2-update-configuration-template-or-logic-engine---optional)
+  - [3. Set Required AWS Permissions](#3-set-required-aws-permissions)
+  - [5. Install the required packages](#5-install-the-required-packages)
+  - [6. Set environment variables](#6-set-environment-variables)
+  - [7. Run the Batch Pipeline](#7-run-the-batch-pipeline)
+  - [Output Files](#output-files)
 - [Recommended Customer Workflow](#recommended-customer-workflow)
   - [Concept Classification Workflow](#concept-classification-workflow)
   - [Soft Attribute Inference Workflow](#soft-attribute-inference-workflow)
@@ -143,11 +144,9 @@ Ensure your input bucket contains raw json files.
 ### 1. Environment Step
 
 ```bash
-git clone https://github.com/your-org/pediatric-aud-batch.git
-cd pediatric-aud-batch
+git clone https://github.com/cal-poly-dxhub/audiology-classification.git
 python3 -m venv .venv
 source .venv/bin/activate
-pip install boto3
 ```
 
 ### 2. Update Configuration (Template or Logic Engine) - Optional
