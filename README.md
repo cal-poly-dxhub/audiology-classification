@@ -1,5 +1,3 @@
-# audiology-classification
-
 # Pediatric Audiology Classification
 
 # Collaboration
