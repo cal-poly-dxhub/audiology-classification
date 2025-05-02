@@ -2,9 +2,12 @@ import json
 import os
 import re
 import boto3
+import logging
 from langchain_aws.chat_models import ChatBedrock
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 with open("config.json", "r") as file:
     config = json.load(file)
@@ -125,6 +128,21 @@ def process_audiology_data(input_json, institution):
 
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON for patient {index}: {e}")
+
+def lambda_handler(event, context):
+    # Log the received event
+    logger.info("Received event: %s", json.dumps(event))
+
+    name = event.get("queryStringParameters", {}) .get("name", "world")
+
+    # Build a response
+    response = {
+        "statusCode": 200,
+        "body": json.dumps({
+            "message": f"Hello, {name}!"
+        })
+    }
+    return response
 
 if __name__ == "__main__":
     input_file_path = "AbrThr_Data_Redacted.json"
