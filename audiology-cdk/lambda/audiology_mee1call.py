@@ -6,16 +6,14 @@ import logging
 from langchain_aws.chat_models import ChatBedrock
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-with open("config.json", "r") as file:
-    config = json.load(file)
+s3_client = boto3.client("s3")
 
 bedrock_runtime = boto3.client("bedrock-runtime", region_name="us-west-2")
+BUCKET_NAME = os.environ['BUCKET_NAME']
 
-OUTPUT_DIR = "output"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def categorize_diagnosis_with_lm(report, results, institution_template, valid_values, guidelines):
     """Uses LLM to extract explicit facts and classify hearing loss in one step."""
@@ -36,25 +34,26 @@ def categorize_diagnosis_with_lm(report, results, institution_template, valid_va
     json_template_fixed = json.dumps(institution_template, indent=4).replace("{", "{{").replace("}", "}}")
 
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert **pediatric** audiologist that extracts explicit hearing test data and classifies hearing loss accurately."),
+        ("system",
+         "You are an expert **pediatric** audiologist that extracts explicit hearing test data and classifies hearing loss accurately."),
         ("human", "{report_text}\n\n"
-                "Here are the **audiometric test results**:\n\n{results_json}\n\n"
-                "**Use the classification template and guidelines** to determine:\n"
-                "{json_template}\n\n"
-                "**Valid Values:**\n```json\n{valid_values}\n```\n\n"
-                "**Guidelines for Classification:**\n```json\n{guidelines}\n```\n\n"
+                  "Here are the **audiometric test results**:\n\n{results_json}\n\n"
+                  "**Use the classification template and guidelines** to determine:\n"
+                  "{json_template}\n\n"
+                  "**Valid Values:**\n```json\n{valid_values}\n```\n\n"
+                  "**Guidelines for Classification:**\n```json\n{guidelines}\n```\n\n"
 
-                "**Processing Rules (MUST Follow):**\n"
-                "- **Use only explicitly provided threshold values**; do not infer missing values.\n"
-                "- **If multiple severities are listed, assign the most severe classification.**\n"
+                  "**Processing Rules (MUST Follow):**\n"
+                  "- **Use only explicitly provided threshold values**; do not infer missing values.\n"
+                  "- **If multiple severities are listed, assign the most severe classification.**\n"
 
-                "**Output Requirements:**\n"
-                "- Return classification in **EXACT JSON format** as per the template, with no modifications.\n"
-                "- Provide **precise reasoning** for each classification.\n"
-                "- Make sure there is thorough, chain of thought reasoning for each attribute's output."
-                 "- **Cite guideline numbers** when making classification decisions.\n"
-                "- **DO NOT include any additional explanations, assumptions, or commentary.**\n"
-        )
+                  "**Output Requirements:**\n"
+                  "- Return classification in **EXACT JSON format** as per the template, with no modifications.\n"
+                  "- Provide **precise reasoning** for each classification.\n"
+                  "- Make sure there is thorough, chain of thought reasoning for each attribute's output."
+                  "- **Cite guideline numbers** when making classification decisions.\n"
+                  "- **DO NOT include any additional explanations, assumptions, or commentary.**\n"
+         )
     ])
 
     chain = prompt | model | StrOutputParser()
@@ -70,8 +69,14 @@ def categorize_diagnosis_with_lm(report, results, institution_template, valid_va
     except Exception as e:
         return f"Error categorizing diagnosis: {e}"
 
+
 def process_audiology_data(input_json, institution):
     """Processes the audiology JSON data, merging extraction and classification into one step."""
+
+    # load config from S3
+    resp = s3_client.get_object(Bucket=BUCKET_NAME, Key="/Config/config.json")
+    body = resp['Body'].read()
+    config = json.loads(body)
 
     institution_data = config["templates"].get(institution, {})
     institution_template = institution_data.get("template", {})
@@ -86,13 +91,6 @@ def process_audiology_data(input_json, institution):
         print(f"Warning: No processing guidelines found for '{institution}', proceeding without them.")
 
     for index, patient in enumerate(input_json, start=1):
-        output_file = os.path.join(OUTPUT_DIR, f"diagnosis_results_{index}_{institution}.json")
-
-        # Skip already processed files
-        if os.path.exists(output_file):
-            print(f"Skipping patient {index} - already processed.")
-            continue
-
         print(f"\nProcessing patient {index}...\n")
 
         raw_report = patient.get("Report", "").strip()
@@ -103,7 +101,8 @@ def process_audiology_data(input_json, institution):
             continue
 
         # Extract and categorize in a single step
-        diagnosis_results = categorize_diagnosis_with_lm(raw_report, audiometric_results, institution_template, valid_values, processing_guidelines)
+        diagnosis_results = categorize_diagnosis_with_lm(raw_report, audiometric_results, institution_template,
+                                                         valid_values, processing_guidelines)
         if "Error" in diagnosis_results:
             print(f"Skipping patient {index} due to categorization error: {diagnosis_results}")
             continue
@@ -117,10 +116,13 @@ def process_audiology_data(input_json, institution):
                 diagnosis_json_str = match.group(1).strip()
                 diagnosis_json = json.loads(diagnosis_json_str)
 
-                # Save each patient's diagnosis separately
-                with open(output_file, "w") as json_file:
-                    json.dump(diagnosis_json, json_file, indent=4)
-
+                # TODO
+                s3_client.put_object(
+                    Bucket=BUCKET_NAME,
+                    Key="<provider>_lab_output/<patient>",
+                    Body=diagnosis_json,
+                    ContentType='application/json'
+                )
                 print(f"Diagnosis results saved successfully to {output_file}")
 
             else:
@@ -129,26 +131,34 @@ def process_audiology_data(input_json, institution):
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON for patient {index}: {e}")
 
+
 def lambda_handler(event, context):
     # Log the received event
     logger.info("Received event: %s", json.dumps(event))
 
-    name = event.get("queryStringParameters", {}) .get("name", "world")
+    # Obtain Patient Record from S3
+    record = event.get("Records", [])
+    bucket = record["s3"]["bucket"]["name"]
+    key = record["s3"]["object"]["key"]
 
-    # Build a response
+    resp = s3_client.get_object(Bucket=bucket, Key=key)
+    body = resp["Body"].read()
+
+    try:
+        data = json.loads(body)
+        process_audiology_data(data, "Redcap")  # TODO Change where the institution field comes from
+
+    except json.JSONDecodeError:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "message": f"Error parsing record: {record}"
+            })
+        }
     response = {
         "statusCode": 200,
         "body": json.dumps({
-            "message": f"Hello, {name}!"
+            "message": f"Successfully Processed patient record: {record}"
         })
     }
     return response
-
-if __name__ == "__main__":
-    input_file_path = "AbrThr_Data_Redacted.json"
-    institution = "Redcap"
-
-    with open(input_file_path, "r", encoding="utf-8") as input_file:
-        input_json = json.load(input_file)
-
-    process_audiology_data(input_json, institution)
